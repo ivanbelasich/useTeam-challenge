@@ -38,10 +38,10 @@ export function useTasks() {
 
   const updateTask = async (id: string, task: Partial<Task>) => {
     try {
-      socket.emit('taskUpdated', {
+      socket.emit("taskUpdated", {
         id,
         title: task.title,
-        description: task.description
+        description: task.description,
       });
     } catch (err) {
       console.error("Error updating task:", err);
@@ -63,10 +63,9 @@ export function useTasks() {
 
   const updateTaskStatus = async (id: string, status: TaskStatus) => {
     try {
-      // Solo emitir el evento WebSocket
-      socket.emit('cardMoved', {
+      socket.emit("cardMoved", {
         cardId: id,
-        targetColumn: status
+        targetColumn: status,
       });
     } catch (err) {
       console.error("Error updating task status:", err);
@@ -80,32 +79,34 @@ export function useTasks() {
 
     if (!socket) return;
 
-    socket.on('cardMoved', (data: { cardId: string; targetColumn: TaskStatus }) => {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === data.cardId
-            ? { ...task, status: data.targetColumn }
-            : task,
-        ),
-      );
-    });
+    socket.on(
+      "cardMoved",
+      (data: { cardId: string; targetColumn: TaskStatus }) => {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === data.cardId
+              ? { ...task, status: data.targetColumn }
+              : task
+          )
+        );
+      }
+    );
 
-    socket.on('taskUpdated', (updatedTask: MongoTask) => {
-      console.log('Received taskUpdated event:', updatedTask);
+    socket.on("taskUpdated", (updatedTask: MongoTask) => {
       const mappedTask = {
         ...updatedTask,
-        id: updatedTask._id
+        id: updatedTask._id,
       };
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === mappedTask._id ? mappedTask : task,
-        ),
+          task.id === mappedTask._id ? mappedTask : task
+        )
       );
     });
 
     return () => {
-      socket.off('cardMoved');
-      socket.off('taskUpdated');
+      socket.off("cardMoved");
+      socket.off("taskUpdated");
     };
   }, [socket]);
 
