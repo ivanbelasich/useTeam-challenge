@@ -24,7 +24,6 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
 
 
     if (!task?.id) {
-        console.error('Invalid task data:', task);
         return null;
     }
 

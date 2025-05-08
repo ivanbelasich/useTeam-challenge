@@ -38,13 +38,11 @@ export function useTasks() {
 
   const updateTask = async (id: string, task: Partial<Task>) => {
     try {
-      const { data: updatedTask } = await axios.put(
-        `${API_URL}/tasks/${id}`,
-        task
-      );
-      const mappedTask = { ...updatedTask, id: updatedTask._id };
-      setTasks((prev) => prev.map((t) => (t.id === id ? mappedTask : t)));
-      return mappedTask;
+      socket.emit('taskUpdated', {
+        id,
+        title: task.title,
+        description: task.description
+      });
     } catch (err) {
       console.error("Error updating task:", err);
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -65,13 +63,11 @@ export function useTasks() {
 
   const updateTaskStatus = async (id: string, status: TaskStatus) => {
     try {
-      const { data: updatedTask } = await axios.put(
-        `${API_URL}/tasks/${id}/status`,
-        { status }
-      );
-      const mappedTask = { ...updatedTask, id: updatedTask._id };
-      setTasks((prev) => prev.map((t) => (t.id === id ? mappedTask : t)));
-      return mappedTask;
+      // Solo emitir el evento WebSocket
+      socket.emit('cardMoved', {
+        cardId: id,
+        targetColumn: status
+      });
     } catch (err) {
       console.error("Error updating task status:", err);
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -82,15 +78,34 @@ export function useTasks() {
   useEffect(() => {
     fetchTasks();
 
-    socket.on(
-      "cardMoved",
-      (data: { cardId: string; targetColumn: TaskStatus }) => {
-        updateTaskStatus(data.cardId, data.targetColumn);
-      }
-    );
+    if (!socket) return;
+
+    socket.on('cardMoved', (data: { cardId: string; targetColumn: TaskStatus }) => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === data.cardId
+            ? { ...task, status: data.targetColumn }
+            : task,
+        ),
+      );
+    });
+
+    socket.on('taskUpdated', (updatedTask: MongoTask) => {
+      console.log('Received taskUpdated event:', updatedTask);
+      const mappedTask = {
+        ...updatedTask,
+        id: updatedTask._id
+      };
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === mappedTask._id ? mappedTask : task,
+        ),
+      );
+    });
 
     return () => {
-      socket.off("cardMoved");
+      socket.off('cardMoved');
+      socket.off('taskUpdated');
     };
   }, [socket]);
 
