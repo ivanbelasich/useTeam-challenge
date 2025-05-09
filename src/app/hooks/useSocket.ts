@@ -1,7 +1,8 @@
 import { io } from "socket.io-client";
 import { useEffect } from "react";
 
-const socket = io("http://localhost:4001");
+const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001";
+const socket = io(SOCKET_URL);
 
 export const useSocket = () => {
   const emitCardMoved = (

@@ -3,7 +3,7 @@ import { Task, TaskStatus } from "../lib/types";
 import { useSocket } from "./useSocket";
 import axios from "axios";
 
-const API_URL = "http://localhost:4001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001";
 
 interface MongoTask {
   _id: string;
