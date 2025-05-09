@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend - Tablero Kanban
 
-## Getting Started
+Aplicación frontend para un tablero Kanban construida con Next.js, TypeScript y Tailwind CSS.
 
-First, run the development server:
+## Demo
+
+La aplicación está desplegada en: [https://use-team-challenge.vercel.app/](https://use-team-challenge.vercel.app/)
+
+## Requisitos
+
+- Node.js 18 o superior
+- npm o yarn
+
+## Instalación
+
+1. Clona el repositorio
+2. Instala las dependencias:
+```bash
+npm install
+# o
+yarn install
+```
+
+## Configuración
+
+1. Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4001
+```
+
+
+Para iniciar el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
+# o
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Características
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Tablero Kanban con tres columnas (Por Hacer, En Progreso, Completado)
+- Drag and Drop de tareas entre columnas
+- Creación, edición y eliminación de tareas
+- Actualización en tiempo real con WebSocket
+- Diseño responsive
+- Interfaz moderna y minimalista
 
-## Learn More
+## Tecnologías
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js
+- TypeScript
+- Tailwind CSS
+- @dnd-kit/core (Drag and Drop)
+- Socket.io Client
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
