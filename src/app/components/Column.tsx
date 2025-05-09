@@ -22,7 +22,9 @@ export function Column({ column, tasks, onEditTask, onDeleteTask, onCreateTask }
     });
 
     const handleCreateTask = async () => {
-        if (!title.trim()) return;
+        if (!title.trim() || !description.trim()) {
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -42,11 +44,11 @@ export function Column({ column, tasks, onEditTask, onDeleteTask, onCreateTask }
     };
 
     return (
-        <div className="flex w-80 flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
             <h2 className="text-lg font-semibold text-neutral-100">{column.title}</h2>
             <div
                 ref={setNodeRef}
-                className="flex min-h-[200px] flex-col gap-4 rounded-lg bg-neutral-800 p-4"
+                className="flex flex-col gap-4 rounded-lg bg-neutral-800 p-3 sm:p-4"
             >
                 {tasks.map((task) => {
                     return (
@@ -60,33 +62,33 @@ export function Column({ column, tasks, onEditTask, onDeleteTask, onCreateTask }
                 })}
 
                 {isCreating ? (
-                    <div className="flex flex-col gap-2 rounded-lg bg-neutral-700 p-4">
+                    <div className="flex flex-col gap-2 rounded-lg bg-neutral-700 p-3 sm:p-4">
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="rounded bg-neutral-600 px-2 py-1 text-neutral-100"
+                            className="rounded bg-neutral-600 px-2 py-1 text-sm sm:text-base text-neutral-100"
                             placeholder="Título"
                         />
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="rounded bg-neutral-600 px-2 py-1 text-neutral-100"
+                            className="rounded bg-neutral-600 px-2 py-1 text-sm sm:text-base text-neutral-100"
                             placeholder="Descripción"
                             rows={3}
                         />
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={() => setIsCreating(false)}
-                                className="rounded bg-neutral-600 px-3 py-1 text-sm text-neutral-100 hover:bg-neutral-500"
+                                className="rounded bg-neutral-600 px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm text-neutral-100 hover:bg-neutral-500"
                                 disabled={isSubmitting}
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleCreateTask}
-                                className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-500"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || !title.trim() || !description.trim()}
+                                className="rounded bg-blue-600 px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-default"
                             >
                                 {isSubmitting ? 'Creando...' : 'Crear'}
                             </button>
@@ -95,13 +97,13 @@ export function Column({ column, tasks, onEditTask, onDeleteTask, onCreateTask }
                 ) : (
                     <button
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-neutral-600 p-4 text-neutral-400 hover:border-neutral-500 hover:text-neutral-300"
+                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-neutral-600 p-3 sm:p-4 text-xs sm:text-sm text-neutral-400 hover:border-neutral-500 hover:text-neutral-300"
                     >
                         <span>+</span>
                         <span>Agregar tarea</span>
                     </button>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

@@ -77,30 +77,30 @@ export default function Home() {
   };
 
   if (loading) {
-    return <div className="p-4">Cargando tareas...</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-neutral-900 p-4 text-neutral-100">Cargando tareas...</div>;
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-neutral-900 p-4 text-red-500">Error: {error}</div>;
   }
 
   return (
-    <main className="min-h-screen bg-neutral-900 p-8">
-      <DndContext
-        sensors={sensors}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="mx-auto flex max-w-7xl gap-8">
-          {columns.map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              tasks={tasks.filter((task) => task.status === column.id)}
-              onEditTask={handleEditTask}
-              onDeleteTask={handleDeleteTask}
-              onCreateTask={handleCreateTask}
-            />
-          ))}
+    <main className="min-h-screen w-full bg-neutral-900 p-4 sm:p-6">
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <div className="w-full mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+            {columns.map((column) => (
+              <div key={column.id} className="w-full">
+                <Column
+                  column={column}
+                  tasks={tasks.filter((task) => task.status === column.id)}
+                  onEditTask={handleEditTask}
+                  onDeleteTask={handleDeleteTask}
+                  onCreateTask={handleCreateTask}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </DndContext>
     </main>
