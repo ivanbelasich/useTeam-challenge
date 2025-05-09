@@ -73,6 +73,20 @@ export function useTasks() {
     }
   };
 
+  const createTask = async (task: {
+    title: string;
+    description: string;
+    status: TaskStatus;
+  }) => {
+    try {
+      socket.emit("taskCreated", task);
+    } catch (err) {
+      console.error("Error creating task:", err);
+      setError(err instanceof Error ? err.message : "Error desconocido");
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
 
@@ -91,15 +105,21 @@ export function useTasks() {
       }
     );
 
+    socket.on("taskCreated", (newTask: MongoTask) => {
+      const mappedTask = {
+        ...newTask,
+        id: newTask._id,
+      };
+      setTasks((prevTasks) => [...prevTasks, mappedTask]);
+    });
+
     socket.on("taskUpdated", (updatedTask: MongoTask) => {
       const mappedTask = {
         ...updatedTask,
         id: updatedTask._id,
       };
       setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === mappedTask.id ? mappedTask : task
-        )
+        prevTasks.map((task) => (task.id === mappedTask.id ? mappedTask : task))
       );
     });
 
@@ -121,6 +141,7 @@ export function useTasks() {
     updateTask,
     deleteTask,
     updateTaskStatus,
+    createTask,
     refreshTasks: fetchTasks,
   };
 }

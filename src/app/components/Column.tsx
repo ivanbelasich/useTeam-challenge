@@ -1,19 +1,45 @@
 import { useDroppable } from '@dnd-kit/core';
 import { TaskCard } from './TaskCard';
-import { Column as ColumnType, Task } from '../lib/types';
+import { Column as ColumnType, Task, TaskStatus } from '../lib/types';
+import { useState } from 'react';
 
 type ColumnProps = {
     column: ColumnType;
     tasks: Task[];
     onEditTask: (task: Task) => Promise<void>;
     onDeleteTask: (id: string) => Promise<void>;
+    onCreateTask: (task: { title: string; description: string; status: TaskStatus }) => Promise<void>;
 };
 
-export function Column({ column, tasks, onEditTask, onDeleteTask }: ColumnProps) {
+export function Column({ column, tasks, onEditTask, onDeleteTask, onCreateTask }: ColumnProps) {
+    const [isCreating, setIsCreating] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { setNodeRef } = useDroppable({
         id: column.id,
     });
+
+    const handleCreateTask = async () => {
+        if (!title.trim()) return;
+
+        setIsSubmitting(true);
+        try {
+            await onCreateTask({
+                title,
+                description,
+                status: column.id,
+            });
+            setTitle('');
+            setDescription('');
+            setIsCreating(false);
+        } catch (error) {
+            console.error('Error creating task:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="flex w-80 flex-col gap-4">
@@ -32,6 +58,49 @@ export function Column({ column, tasks, onEditTask, onDeleteTask }: ColumnProps)
                         />
                     );
                 })}
+
+                {isCreating ? (
+                    <div className="flex flex-col gap-2 rounded-lg bg-neutral-700 p-4">
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="rounded bg-neutral-600 px-2 py-1 text-neutral-100"
+                            placeholder="Título"
+                        />
+                        <textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className="rounded bg-neutral-600 px-2 py-1 text-neutral-100"
+                            placeholder="Descripción"
+                            rows={3}
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setIsCreating(false)}
+                                className="rounded bg-neutral-600 px-3 py-1 text-sm text-neutral-100 hover:bg-neutral-500"
+                                disabled={isSubmitting}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleCreateTask}
+                                className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-500"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Creando...' : 'Crear'}
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => setIsCreating(true)}
+                        className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-neutral-600 p-4 text-neutral-400 hover:border-neutral-500 hover:text-neutral-300"
+                    >
+                        <span>+</span>
+                        <span>Agregar tarea</span>
+                    </button>
+                )}
             </div>
         </div>
     );

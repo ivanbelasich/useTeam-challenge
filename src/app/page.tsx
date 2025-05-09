@@ -13,7 +13,7 @@ const columns: ColumnType[] = [
 ];
 
 export default function Home() {
-  const { tasks, loading, error, updateTaskStatus, updateTask, deleteTask } = useTasks();
+  const { tasks, loading, error, updateTaskStatus, updateTask, deleteTask, createTask } = useTasks();
   const { emitCardMoved } = useSocket();
 
   const sensors = useSensors(
@@ -68,6 +68,14 @@ export default function Home() {
     }
   };
 
+  const handleCreateTask = async (task: { title: string; description: string; status: TaskStatus }) => {
+    try {
+      await createTask(task);
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
   if (loading) {
     return <div className="p-4">Cargando tareas...</div>;
   }
@@ -90,6 +98,7 @@ export default function Home() {
               tasks={tasks.filter((task) => task.status === column.id)}
               onEditTask={handleEditTask}
               onDeleteTask={handleDeleteTask}
+              onCreateTask={handleCreateTask}
             />
           ))}
         </div>
