@@ -52,8 +52,7 @@ export function useTasks() {
 
   const deleteTask = async (id: string) => {
     try {
-      await axios.delete(`${API_URL}/tasks/${id}`);
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+      socket.emit("taskDeleted", id);
     } catch (err) {
       console.error("Error deleting task:", err);
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -99,14 +98,19 @@ export function useTasks() {
       };
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === mappedTask._id ? mappedTask : task
+          task.id === mappedTask.id ? mappedTask : task
         )
       );
+    });
+
+    socket.on("taskDeleted", (id: string) => {
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     });
 
     return () => {
       socket.off("cardMoved");
       socket.off("taskUpdated");
+      socket.off("taskDeleted");
     };
   }, [socket]);
 
