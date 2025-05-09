@@ -22,7 +22,9 @@ export function useTasks() {
 
   const fetchTasks = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/tasks`);
+      const { data } = await axios.get(`${API_URL}/tasks`, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+      });
       const mappedTasks = data.map((task: MongoTask) => ({
         ...task,
         id: task._id,
